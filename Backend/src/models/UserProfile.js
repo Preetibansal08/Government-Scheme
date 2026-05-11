@@ -18,16 +18,11 @@ const UserProfile = sequelize.define('UserProfile', {
     },
     age: {
         type: DataTypes.INTEGER,
-        validate: {
-            min: 1,
-            max: 120
-        }
+        validate: { min: 1, max: 120 }
     },
     income: {
         type: DataTypes.DECIMAL(10, 2),
-        validate: {
-            min: 0
-        }
+        validate: { min: 0 }
     },
     occupation: {
         type: DataTypes.STRING(100)
@@ -43,10 +38,12 @@ const UserProfile = sequelize.define('UserProfile', {
     },
     family_size: {
         type: DataTypes.INTEGER,
-        validate: {
-            min: 1
-        }
-    }
+        validate: { min: 1 }
+    },
+   profile_image: {
+    type: DataTypes.STRING,
+    allowNull: true
+}
 }, {
     tableName: 'user_profiles',
     timestamps: true,

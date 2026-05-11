@@ -48,21 +48,26 @@ exports.getSchemeById = async (req, res) => {
 };
 
 exports.getRecommendations = async (req, res) => {
+    console.log("User in request:", req.user); // <-- add this
     try {
         const userProfile = await UserProfile.findOne({
             where: { user_id: req.user.id }
         });
-        
+        console.log("UserProfile:", userProfile?.toJSON()); // check profile
+
         if (!userProfile) {
             return res.status(400).json({
                 success: false,
                 message: 'Please complete your profile first'
             });
         }
-        
+
         const recommendations = await AIRecommendationService.getPersonalizedRecommendations(userProfile);
+        console.log("Recommendations:", recommendations); // check recommended schemes
+
         res.json({ success: true, count: recommendations.length, recommendations });
     } catch (error) {
+        console.error(error);
         res.status(500).json({
             success: false,
             message: 'Error fetching recommendations',
