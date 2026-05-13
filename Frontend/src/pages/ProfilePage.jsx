@@ -18,6 +18,7 @@ export default function ProfilePage() {
     location_state: "",
     location_district: "",
     family_size: "",
+    gender: "",
     profile_image: null,
   });
 
@@ -48,6 +49,12 @@ export default function ProfilePage() {
     { en: "others", hi: "अन्य" },
   ];
 
+  const genderOptions = [
+    { en: "male", hi: "पुरुष" },
+    { en: "female", hi: "महिला" },
+    { en: "other", hi: "अन्य" },
+  ];
+
   const speak = (text, forceLang = null) => {
     if (!text) return;
     
@@ -58,7 +65,6 @@ export default function ProfilePage() {
     setMessage(text);
     setMessageType("info");
     
-    // Use forced language if provided, otherwise use selected language
     const langToUse = forceLang || voiceLang;
     speakUtil(text, langToUse);
     
@@ -102,6 +108,7 @@ export default function ProfilePage() {
       state: { "en-US": "Please enter your state", "hi-IN": "कृपया अपना राज्य दर्ज करें" },
       district: { "en-US": "Please enter your district", "hi-IN": "कृपया अपना जिला दर्ज करें" },
       family: { "en-US": "Please enter your family size", "hi-IN": "कृपया अपने परिवार का आकार दर्ज करें" },
+      gender: { "en-US": "Please select your gender", "hi-IN": "कृपया अपना लिंग चुनें" },
       profileSaved: { "en-US": "Your profile has been updated successfully!", "hi-IN": "आपकी प्रोफ़ाइल सफलतापूर्वक अपडेट हो गई है!" },
       viewSchemes: { "en-US": "You can see all schemes here. Explore to find suitable ones for you!", "hi-IN": "आप यहाँ सभी योजनाएँ देख सकते हैं। आपके लिए उपयुक्त योजनाओं का पता लगाएँ!" },
       recommendations: { "en-US": "Just saved your profile! You can see all recommended schemes suitable for you.", "hi-IN": "आपकी प्रोफ़ाइल अभी-अभी सहेजी गई है! आप यहाँ आपके लिए सुझाई गई योजनाएँ देख सकते हैं।" },
@@ -109,7 +116,6 @@ export default function ProfilePage() {
     return messages[key][voiceLang] || messages[key]["en-US"];
   };
 
-  // Speak welcome message in current language
   const speakWelcome = () => {
     const welcomeMsg = getMessage("welcome");
     speak(welcomeMsg, voiceLang);
@@ -135,6 +141,7 @@ export default function ProfilePage() {
         location_state: data.location_state || "",
         location_district: data.location_district || "",
         family_size: data.family_size || "",
+        gender: data.gender || "",
         profile_image: null,
       });
 
@@ -166,7 +173,6 @@ export default function ProfilePage() {
     };
   }, []);
 
-  // Re-speak welcome message when language changes
   useEffect(() => {
     if (profile !== null || true) {
       stopSpeech();
@@ -196,6 +202,7 @@ export default function ProfilePage() {
     data.append("location_state", form.location_state);
     data.append("location_district", form.location_district);
     data.append("family_size", Number(form.family_size));
+    data.append("gender", form.gender);
     if (form.profile_image) data.append("profile_image", form.profile_image);
 
     try {
@@ -232,7 +239,7 @@ export default function ProfilePage() {
 
   const getCompletionPercentage = () => {
     let completed = 0;
-    let total = 7;
+    let total = 8;
     if (form.age) completed++;
     if (form.income) completed++;
     if (form.occupation) completed++;
@@ -240,6 +247,7 @@ export default function ProfilePage() {
     if (form.location_state) completed++;
     if (form.location_district) completed++;
     if (form.family_size) completed++;
+    if (form.gender) completed++;
     return Math.round((completed / total) * 100);
   };
 
@@ -365,6 +373,10 @@ export default function ProfilePage() {
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Education:</span>
                       <span className="text-gray-700">{profile.education_level}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Gender:</span>
+                      <span className="text-gray-700">{profile.gender}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Family Size:</span>
@@ -508,6 +520,28 @@ export default function ProfilePage() {
                               onMouseEnter={() => speakInHindi(opt.hi)}
                             >
                               {opt.en}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Gender *</label>
+                        <select 
+                          value={form.gender} 
+                          onChange={(e) => setForm({ ...form, gender: e.target.value })} 
+                          onFocus={() => speak(getMessage("gender"), voiceLang)}
+                          className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-[#1a237e] focus:border-transparent outline-none transition"
+                          required
+                        >
+                          <option value="">Select Gender</option>
+                          {genderOptions.map((opt) => (
+                            <option 
+                              key={opt.en} 
+                              value={opt.en}
+                              onMouseEnter={() => speakInHindi(opt.hi)}
+                            >
+                              {opt.en.charAt(0).toUpperCase() + opt.en.slice(1)}
                             </option>
                           ))}
                         </select>

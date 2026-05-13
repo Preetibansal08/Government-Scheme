@@ -43,6 +43,14 @@ const UserProfile = sequelize.define('UserProfile', {
    profile_image: {
     type: DataTypes.STRING,
     allowNull: true
+},
+// models/UserProfile.js - Add gender field
+gender: {
+  type: DataTypes.STRING(20),
+  allowNull: true,
+  validate: {
+    isIn: [['male', 'female', 'other']]
+  }
 }
 }, {
     tableName: 'user_profiles',
